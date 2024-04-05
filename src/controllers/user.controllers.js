@@ -1,10 +1,9 @@
 import app from '../app.js';
-import {asyncHandler} from "../utils/asynHandler.js"
-import {ApiError} from "../utils/ApiError.js"
-import {User} from "../models/user.models.js"
-import {uploadOnCloudinary} from "../utils/fileUpload.js"
-import {ApiResponse} from  "/Users/rajnishkumarrai/Desktop/backend/src/utils/apiResponse"
-
+import {asyncHandler} from "../utils/asynHandler.js";
+import {ApiError} from "../utils/ApiError.js";
+import {User} from "../models/user.models.js";
+import {uploadOnCloudinary} from "../utils/fileUpload.js";
+import {ApiResponse} from '../utils/apiResponse.js';
 
 
 
@@ -66,7 +65,7 @@ const registerUser = asyncHandler(async(req,res) =>{
     )
 
     if(!createdUser){
-        throw ApiError(500, "something went wrong while registering the user")
+        throw new ApiError(500, "something went wrong while registering the user")
     }
     return res.status(201).json(
         new ApiResponse(200,createdUser, "user registered succesfully")
