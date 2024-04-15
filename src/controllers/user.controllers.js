@@ -9,8 +9,9 @@ const generateAccessAndRefreshToken = async(UserId) => {
     //user ko find kr lega then accesstoken and refreshtoken bhi generate kr lega
     try {
         const user = await User.findById(UserId)
+        console.log("user found:", user);
         const accessToken = user.generateAccessToken()
-        const  refreshToken = user.generateRefreshToken()
+        const refreshToken = user.generateRefreshToken()
 //refreshtokenn ko database mein save karva diya
         user.refreshToken = refreshToken
         await user.save({ validateBeforeSave: false})
@@ -20,6 +21,7 @@ const generateAccessAndRefreshToken = async(UserId) => {
             refreshToken
         }
     } catch (error) {
+        console.log("error in generateAccessAndRefreshToken function: ", error);
         throw new ApiError(500,"Something went wrong while generationg access and refresh token");
     }
 }
@@ -56,7 +58,7 @@ const registerUser = asyncHandler(async(req,res) =>{
     }
 
 
-    const avatarLocalPath = req.files?.avatar[0]?.path;
+    const avatarLocalPath = req.files?.avatar?.[0]?.path;
     // const coverImageLocalPath = req.files?.coverImage[0]?.path;
     let coverImageLocalPath;
     if(req.files && Array.isArray(req.files.coverImage)  && req.files.coverImage.length > 0){
@@ -102,10 +104,16 @@ const loginUser = asyncHandler(async(req,res) => {
     //send cookie
 
     const {email,username,password} = req.body
+    console.log(email);
 
-    if(!username || !email){
+
+
+    if(!username && !email){
         throw new ApiError(400, "username or email is required")
     }
+    // if(!username || !email){
+    //    throw new ApiError(400, "username or email is required")
+    //}
     const user = await User.findOne({
         $or :[{username}, {email}]
     })
@@ -144,8 +152,8 @@ const logoutUser = asyncHandler(async(req,res) => {
     await User.findByIdAndUpdate(
         req.user.id,
         {
-            $set: {
-                refreshToken: undefined
+            $unset: {
+                refreshToken: 1 //undefined --> this removes the file from the document
             }
         },
         {
