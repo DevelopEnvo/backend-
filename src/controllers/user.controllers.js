@@ -115,13 +115,13 @@ const loginUser = asyncHandler(async(req,res) => {
     //    throw new ApiError(400, "username or email is required")
     //}
     const user = await User.findOne({
-        $or :[{username}, {email}]
-    })
-
+        $or :[{username}, {email}],
+    });
+    console.log("found user:",user)
+    
     if(!user){
         throw new ApiError(404, "user does not exists")
     }
-
     const isPasswordValid = await user.isPasswordCorrect(password)
 
     if(!isPasswordValid) {
@@ -150,7 +150,7 @@ const loginUser = asyncHandler(async(req,res) => {
 })
 const logoutUser = asyncHandler(async(req,res) => {
     await User.findByIdAndUpdate(
-        req.user.id,
+        req.user._id,
         {
             $unset: {
                 refreshToken: 1 //undefined --> this removes the file from the document
